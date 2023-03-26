@@ -38,7 +38,7 @@ def send_email(offer, provider, temp=0):
         return 1
     except Exception as e:
         if temp == 0:
-            return send_email(offer["href"], provider, temp=temp + 1)
+            return send_email(offer["href"], "[NEW OFFER]", temp=temp + 1)
         print(f'[Email] Body  {json.dumps(offer)}')
         print(f"[Email] not sent due to an error: {e}")
         return 0
