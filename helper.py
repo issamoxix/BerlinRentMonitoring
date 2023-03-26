@@ -34,10 +34,11 @@ def send_email(offer, provider, temp=0):
         smtp_connection.sendmail(sender_email, recipient_email, message)
         smtp_connection.quit()
 
-        print("Email sent ! ")
+        print("[Email] sent ! ")
         return 1
     except Exception as e:
         if temp == 0:
             return send_email(offer["href"], provider, temp=temp + 1)
-        print(f"Email not sent due to an error: {e}")
+        print(f'[Email] Body  {json.dumps(offer)}')
+        print(f"[Email] not sent due to an error: {e}")
         return 0
