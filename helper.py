@@ -1,6 +1,7 @@
 import smtplib
 import json
 import os
+from datetime import datetime
 
 
 def send_email(offer, provider, temp=0):
@@ -12,6 +13,7 @@ def send_email(offer, provider, temp=0):
     :param temp: (int) Number of retries attempted if the first attempt fails.
     :return: (int) 1 if the email was sent successfully, 0 otherwise.
     """
+    current_time = datetime.now().strftime("%H:%M:%S")
     secrets_file = os.path.join(os.getcwd(), 'secrets.json')
     with open(secrets_file, 'r') as f:
         secrets = json.load(f)
@@ -38,7 +40,7 @@ def send_email(offer, provider, temp=0):
         return 1
     except Exception as e:
         if temp == 0:
-            return send_email(offer["href"], "[NEW OFFER]", temp=temp + 1)
+            return send_email(offer["href"], f"[NEW OFFER] ({current_time}) ", temp=temp + 1)
         print(f'[Email] Body  {json.dumps(offer)}')
         print(f"[Email] not sent due to an error: {e}")
         return 0
