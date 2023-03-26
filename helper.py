@@ -16,15 +16,13 @@ def send_email(offer, provider, temp=0):
     with open(secrets_file, 'r') as f:
         secrets = json.load(f)
     try:
-        # Define the email sender and recipient
         recipient_email = secrets["reciepient"]["email"]
         sender_email = secrets["sender"]["email"]
 
-        # Define the email message
         subject = provider
         body = json.dumps(offer)
         message = f"Subject: {subject}\n\n{body}"
-        # Connect to the SMTP server
+        
         smtp_server = secrets["server"]["smptp_server"]
         smtp_port = 587
         smtp_username = secrets["sender"]["email"]
@@ -33,11 +31,9 @@ def send_email(offer, provider, temp=0):
         smtp_connection.starttls()
         smtp_connection.login(smtp_username, smtp_password)
 
-        # Send the email
         smtp_connection.sendmail(sender_email, recipient_email, message)
-
-        # Disconnect from the SMTP server
         smtp_connection.quit()
+
         print("Email sent ! ")
         return 1
     except Exception as e:
