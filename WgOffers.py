@@ -24,6 +24,7 @@ def main():
         for id, item in enumerate(items):
             title = item.find("h3").text
             title = title.strip()
+            a_href = item.find("h3").a.get('href')
             details = item.find("div", {"class": "row noprint middle"}).find_all("b")
             price = details[0].text
             size = details[1].text
@@ -31,6 +32,7 @@ def main():
                 "title": title,
                 "price": price,
                 "size": size,
+                "href":f"https://www.wg-gesucht.de{a_href}"
             }
             if offer != prev[id]:
                 prev[id] = offer
@@ -40,13 +42,15 @@ def main():
                         current_time,
                         json.dumps(lastest[0], ensure_ascii=False),
                     )
-                    alarm_soud()
-                    kill = False
-        count += 1
-
+                    # kill = False
+        if count > 0:
+            new_latest = [prev[i] for i in range(5) if prev[i]][0]
+            if new_latest["href"] != lastest[0]["href"]:
+                alarm_soud(new_latest, f"[WGG] {new_latest['title']}")
         lastest = [prev[i] for i in range(5) if prev[i]]
         current_time = datetime.now().strftime("%H:%M:%S")
         print(current_time, json.dumps(lastest[0], ensure_ascii=False))
+        count += 1
 
 
 if __name__ == "__main__":

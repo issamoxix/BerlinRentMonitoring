@@ -52,7 +52,12 @@ def main():
                 ]
             except:
                 meta_data = []
-            offer = {"title": title, "price": price, "meta": meta_data, "href": a_href}
+            offer = {
+                "title": title,
+                "price": price,
+                "meta": meta_data,
+                "href": f"https://www.ebay-kleinanzeigen.de{a_href}",
+            }
             if offer != prev[id]:
                 prev[id] = offer
                 if count > 0:
@@ -62,10 +67,11 @@ def main():
                         json.dumps(lastest[0], ensure_ascii=False),
                     )
                     # kill = False
-        if count >0:
-            if [prev[i] for i in range(5) if prev[i]][0]['href'] != lastest[0]['href']:
-                alarm_soud()
-                kill=False 
+        if count > 0:
+            new_latest = [prev[i] for i in range(5) if prev[i]][0]
+            if new_latest["href"] != lastest[0]["href"]:
+                alarm_soud(new_latest, f"[Ebay] {new_latest['title']}")
+                # kill=False
         lastest = [prev[i] for i in range(5) if prev[i]]
         current_time = datetime.now().strftime("%H:%M:%S")
         print(current_time, json.dumps(lastest[0], ensure_ascii=False))
