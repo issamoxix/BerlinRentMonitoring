@@ -26,56 +26,50 @@ def main():
     }
 
     count = 0
-    prev = [None for i in range(100)]
+    prev = {}
     kill = True
     while kill:
         time.sleep(5)
         response = requests.get(url, timeout=15, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
-        items = soup.find("ul", {"id": "srchrslt-adtable"}).find_all("li")
-        for id, item in enumerate(items):
-            if "is-topad" in item.get("class") or "lazyload-item" not in item.get(
-                "class"
-            ):
-                continue
-            title = item.h2.text.strip()
-            a_href = item.h2.a.get("href")
-            price = item.find(
-                "p", {"class": "aditem-main--middle--price-shipping--price"}
-            ).text.strip()
-            try:
-                meta_data = [
-                    i.text
-                    for i in item.find("p", {"class": "text-module-end"}).find_all(
-                        "span"
-                    )
-                ]
-            except:
-                meta_data = []
-            offer = {
-                "title": title,
-                "price": price,
-                "meta": meta_data,
-                "href": f"https://www.ebay-kleinanzeigen.de{a_href}",
-            }
-            if offer != prev[id]:
-                prev[id] = offer
-                if count > 0:
-                    print(
-                        "[NEW]",
-                        current_time,
-                        json.dumps(lastest[0], ensure_ascii=False),
-                    )
-                    # kill = False
-        if count > 0:
-            new_latest = [prev[i] for i in range(5) if prev[i]][0]
-            if new_latest["href"] != lastest[0]["href"]:
-                alarm_soud(new_latest, f"[Ebay] {new_latest['title']}")
-                # kill=False
-        lastest = [prev[i] for i in range(5) if prev[i]]
+        items = soup.find("ul", {"id": "srchrslt-adtable"}).find_all(
+            "li", {"class": ["lazyload-item", "ad-listitem"]}
+        )
+        item = [
+            i
+            for i in items
+            if "is-topad" not in i.get("class") and "lazyload-item" in i.get("class")
+        ][0]
+        title = item.h2.text.strip()
+        a_href = item.h2.a.get("href")
+        price = item.find(
+            "p", {"class": "aditem-main--middle--price-shipping--price"}
+        ).text.strip()
+        try:
+            meta_data = [
+                i.text
+                for i in item.find("p", {"class": "text-module-end"}).find_all("span")
+            ]
+        except:
+            meta_data = []
+        offer = {
+            "title": title,
+            "price": price,
+            "meta": meta_data,
+            "href": f"https://www.ebay-kleinanzeigen.de{a_href}",
+        }
         current_time = datetime.now().strftime("%H:%M:%S")
-        print(current_time, json.dumps(lastest[0], ensure_ascii=False))
+        if count > 0:
+            if offer["href"] != prev["href"]:
+                print(
+                    "[NEW]",
+                    current_time,
+                    json.dumps(offer, ensure_ascii=False),
+                )
+                send_email(offer, f"[Ebay] {offer['title']}")
+        prev = offer
         count += 1
+        print(current_time, json.dumps(offer, ensure_ascii=False))
 
 
 if __name__ == "__main__":
