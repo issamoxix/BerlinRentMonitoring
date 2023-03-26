@@ -36,14 +36,14 @@ def main():
         if count > 0:
             if offer["href"] != prev["href"]:
                 print(
-                    "[NEW]",
+                    "[WGG][NEW]",
                     current_time,
                     json.dumps(offer, ensure_ascii=False),
                 )
                 send_email(offer, f"[WGG] {offer['title']}")
         prev = offer
         count += 1
-        print(current_time, json.dumps(offer, ensure_ascii=False))
+        print("[WGG] ",current_time, json.dumps(offer, ensure_ascii=False))
 
 
 
