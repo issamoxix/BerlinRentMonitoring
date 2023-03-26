@@ -39,6 +39,7 @@ def main():
             ):
                 continue
             title = item.h2.text.strip()
+            a_href = item.h2.a.get("href")
             price = item.find(
                 "p", {"class": "aditem-main--middle--price-shipping--price"}
             ).text.strip()
@@ -51,18 +52,24 @@ def main():
                 ]
             except:
                 meta_data = []
-            offer = {"title": title, "price": price, "meta": meta_data}
+            offer = {"title": title, "price": price, "meta": meta_data, "href": a_href}
             if offer != prev[id]:
                 prev[id] = offer
                 if count > 0:
-                    print('[NEW]',current_time, json.dumps(lastest[0], ensure_ascii=False))
-                    alarm_soud()
-                    kill = False
-        count += 1
-
+                    print(
+                        "[NEW]",
+                        current_time,
+                        json.dumps(lastest[0], ensure_ascii=False),
+                    )
+                    # kill = False
+        if count >0:
+            if [prev[i] for i in range(5) if prev[i]][0]['href'] != lastest[0]['href']:
+                alarm_soud()
+                kill=False 
         lastest = [prev[i] for i in range(5) if prev[i]]
         current_time = datetime.now().strftime("%H:%M:%S")
         print(current_time, json.dumps(lastest[0], ensure_ascii=False))
+        count += 1
 
 
 if __name__ == "__main__":
