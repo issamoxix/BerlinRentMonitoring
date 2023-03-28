@@ -5,10 +5,16 @@ FROM python:3.9-slim-buster
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY . /app
+COPY . .
 
 # Install any needed packages specified in requirements.txt
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Run both Python scripts in parallel
-CMD ["sh", "-c", "python EbayOffers.py & python WgOffers.py"]
+# Set the working directory to /app/BerlinCrawler
+WORKDIR /app/BerlinCrawler
+
+# Copy secrets.json into the container at /app/BerlinCrawler
+COPY secrets.json .
+
+# Run main.py script
+CMD ["python", "main.py"]

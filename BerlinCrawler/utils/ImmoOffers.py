@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import json
-from helper import *
+from helpers.helper import *
 import time
 from datetime import datetime
 
@@ -26,7 +26,7 @@ headers = {
 url = "https://www.immobilienscout24.de/Suche/de/berlin/berlin/wohnung-mieten?numberofrooms=1.0-&price=-900.0&pricetype=calculatedtotalrent&sorting=2&enteredFrom=result_list"
 
 
-def main():
+def ImmoCrawler():
     count = 0
     prev = [None for i in range(100)]
     while True:
@@ -60,6 +60,3 @@ def main():
         lastest = [prev[i] for i in range(5) if prev[i]]
         current_time = datetime.now().strftime("%H:%M:%S")
         print(current_time, json.dumps(lastest[0], ensure_ascii=False))
-
-if __name__ == "__main__":
-    main()
