@@ -27,7 +27,9 @@ def main():
 
     count = 0
     prev = {}
+
     kill = True
+    email_sent = []
     while kill:
         time.sleep(5)
         response = requests.get(url, timeout=15, headers=headers)
@@ -61,12 +63,18 @@ def main():
         current_time = datetime.now().strftime("%H:%M:%S")
         if count > 0:
             if offer["href"] != prev["href"]:
+                if offer['href'] in email_sent:
+                    prev = offer
+                    count += 1
+                    print("[Ebay] ",current_time, json.dumps(offer, ensure_ascii=False))
+                    continue
                 print(
                     "[Ebay][NEW]",
                     current_time,
                     json.dumps(offer, ensure_ascii=False),
                 )
                 send_email(offer, f"[Ebay] {offer['title']}")
+                email_sent.append(offer["href"])
         prev = offer
         count += 1
         print("[Ebay] ",current_time, json.dumps(offer, ensure_ascii=False))

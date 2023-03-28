@@ -14,6 +14,7 @@ def main():
     prev = {}
 
     kill = True
+    email_sent = []
     while kill:
         response = requests.get(url, timeout=15, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
@@ -25,7 +26,10 @@ def main():
         a_href = item.find("h3").a.get('href')
         details = item.find("div", {"class": "row noprint middle"}).find_all("b")
         price = details[0].text
-        size = details[1].text
+        try:
+            size = details[1].text
+        except:
+            size = None
         offer = {
             "title": title,
             "price": price,
@@ -35,12 +39,18 @@ def main():
         current_time = datetime.now().strftime("%H:%M:%S")
         if count > 0:
             if offer["href"] != prev["href"]:
+                if offer['href'] in email_sent:
+                    prev = offer
+                    count += 1
+                    print("[WGG] ",current_time, json.dumps(offer, ensure_ascii=False))
+                    continue
                 print(
                     "[WGG][NEW]",
                     current_time,
                     json.dumps(offer, ensure_ascii=False),
                 )
                 send_email(offer, f"[WGG] {offer['title']}")
+                email_sent.append(offer["href"])
         prev = offer
         count += 1
         print("[WGG] ",current_time, json.dumps(offer, ensure_ascii=False))
