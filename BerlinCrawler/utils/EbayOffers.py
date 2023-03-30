@@ -7,7 +7,6 @@ from datetime import datetime
 
 
 def EbayCrawler():
-    try:
         url = "https://www.ebay-kleinanzeigen.de/s-wohnung-mieten/berlin/anzeige:angebote/c203l3331+wohnung_mieten.swap_s:nein"
         headers = {
             "authority": "www.ebay-kleinanzeigen.de",
@@ -32,52 +31,56 @@ def EbayCrawler():
         kill = True
         email_sent = []
         while kill:
-            time.sleep(5)
-            response = requests.get(url, timeout=15, headers=headers)
-            soup = BeautifulSoup(response.text, "html.parser")
-            items = soup.find("ul", {"id": "srchrslt-adtable"}).find_all(
-                "li", {"class": ["lazyload-item", "ad-listitem"]}
-            )
-            item = [
-                i
-                for i in items
-                if "is-topad" not in i.get("class") and "lazyload-item" in i.get("class")
-            ][0]
-            title = item.h2.text.strip()
-            a_href = item.h2.a.get("href")
-            price = item.find(
-                "p", {"class": "aditem-main--middle--price-shipping--price"}
-            ).text.strip()
             try:
-                meta_data = [
-                    i.text
-                    for i in item.find("p", {"class": "text-module-end"}).find_all("span")
-                ]
-            except:
-                meta_data = []
-            offer = {
-                "title": title,
-                "price": price,
-                "meta": meta_data,
-                "href": f"https://www.ebay-kleinanzeigen.de{a_href}",
-            }
-            current_time = datetime.now().strftime("%H:%M:%S")
-            if count > 0:
-                if offer["href"] != prev["href"]:
-                    if offer['href'] in email_sent:
-                        prev = offer
-                        count += 1
-                        print("[Ebay] ",current_time, json.dumps(offer, ensure_ascii=False))
-                        continue
-                    print(
-                        "[Ebay][NEW]",
-                        current_time,
-                        json.dumps(offer, ensure_ascii=False),
-                    )
-                    send_email(offer, f"[Ebay] {offer['title']}")
-                    email_sent.append(offer["href"])
-            prev = offer
-            count += 1
-            print("[Ebay] ",current_time, json.dumps(offer, ensure_ascii=False))
-    except Exception as e:
-        print(f'[ERROR] something went wrong {e}')
+                time.sleep(5)
+                response = requests.get(url, timeout=15, headers=headers)
+                soup = BeautifulSoup(response.text, "html.parser")
+                items = soup.find("ul", {"id": "srchrslt-adtable"}).find_all(
+                    "li", {"class": ["lazyload-item", "ad-listitem"]}
+                )
+                item = [
+                    i
+                    for i in items
+                    if "is-topad" not in i.get("class") and "lazyload-item" in i.get("class")
+                ][0]
+                title = item.h2.text.strip()
+                a_href = item.h2.a.get("href")
+                price = item.find(
+                    "p", {"class": "aditem-main--middle--price-shipping--price"}
+                ).text.strip()
+                try:
+                    meta_data = [
+                        i.text
+                        for i in item.find("p", {"class": "text-module-end"}).find_all("span")
+                    ]
+                except:
+                    meta_data = []
+                offer = {
+                    "title": title,
+                    "price": price,
+                    "meta": meta_data,
+                    "href": f"https://www.ebay-kleinanzeigen.de{a_href}",
+                }
+                current_time = datetime.now().strftime("%H:%M:%S")
+                if count > 0:
+                    if offer["href"] != prev["href"]:
+                        if offer['href'] in email_sent:
+                            prev = offer
+                            count += 1
+                            print("[Ebay] ",current_time, json.dumps(offer, ensure_ascii=False))
+                            continue
+                        print(
+                            "[Ebay][NEW]",
+                            current_time,
+                            json.dumps(offer, ensure_ascii=False),
+                        )
+                        send_email(offer, f"[Ebay] {offer['title']}")
+                        email_sent.append(offer["href"])
+                prev = offer
+                count += 1
+                print("[Ebay] ",current_time, json.dumps(offer, ensure_ascii=False))
+            except Exception as e:
+                print(f'[ERROR] something went wrong {e}')
+
+if __name__ == '__main__':
+    EbayCrawler()
