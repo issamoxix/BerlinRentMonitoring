@@ -1,1 +1,2 @@
 # BerlinRentMonitoring
+This code runs a program that crawls data from two websites, eBay and Wg-Gesucht, at the same time using separate threads. Before starting the crawling process, it sends an email notification to the user about the start time. The program waits for both threads to finish before ending. The purpose of this code is to automate the process of collecting data from these websites and provide the user with a notification when the process starts.
