@@ -10,11 +10,5 @@ COPY . .
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Set the working directory to /app/BerlinCrawler
-WORKDIR /app/BerlinCrawler
-
-# Copy secrets.json into the container at /app/BerlinCrawler
-COPY secrets.json .
-
 # Run main.py script
 CMD ["python", "main.py"]
