@@ -59,7 +59,7 @@ def secrets_checker():
 
     secrets = {
         "sender": {"email": "sender@example.com", "password": "senderpassword"},
-        "recipient": {"email": "recipient@example.com"},
+        "reciepient": {"email": "reciepient@example.com"},
         "server": {"smtp_server": "smtp.example.com", "port": 587},
     }
     with open(secrets_path, "w") as secret_file:
